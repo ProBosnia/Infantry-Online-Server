@@ -732,6 +732,7 @@ namespace InfServer.Script.GameType_Eol
             if (_arena._bIsPublic)
                 _arena._bPersistent = true;
             _config = _arena._server._zoneConfig;
+            EolMap.Init(_config.level.lvlFile);   // (2026-11-19) Pioneer Station or Eol Classic: every map spot comes from EolMap
             _arena.setTicker(0, 2, 0, "");
             if (_arena.BotActionModule != null)
                 _arena.BotActionModule.SetObjectives(new EolObjectives(_arena, this));
@@ -829,86 +830,86 @@ namespace InfServer.Script.GameType_Eol
             _eolBorderWallVehicles = new List<Vehicle>();
 
             _pylons = new Dictionary<int, pylonObject>();
-            _pylons.Add(0, new pylonObject(512, 480)); // Sector A
-            _pylons.Add(1, new pylonObject(2736, 5600)); // Sector A
-            _pylons.Add(2, new pylonObject(4901, 4740)); // Sector A
-            _pylons.Add(3, new pylonObject(7445, 2356)); // Sector A
-            _pylons.Add(4, new pylonObject(5504, 7040)); // Sector B
-            _pylons.Add(5, new pylonObject(8304, 11008));// Sector B
-            _pylons.Add(6, new pylonObject(6784, 13808));// Sector B
-            _pylons.Add(7, new pylonObject(4117, 9956));// Sector B
-            _pylons.Add(8, new pylonObject(13765, 1236)); // Sector C
-            _pylons.Add(9, new pylonObject(17093, 5076)); // Sector C
-            _pylons.Add(10, new pylonObject(12565, 5252)); // Sector C
-            _pylons.Add(11, new pylonObject(18117, 3316)); // Sector C
-            _pylons.Add(12, new pylonObject(20661, 7924)); // Sector D
-            _pylons.Add(13, new pylonObject(16981, 10580)); // Sector D
-            _pylons.Add(14, new pylonObject(18064, 7584)); // Sector D
-            _pylons.Add(15, new pylonObject(11957, 13604)); // Sector D
+            _pylons.Add(0, new pylonObject(EolMap.P(512), EolMap.P(480))); // Sector A
+            _pylons.Add(1, new pylonObject(EolMap.P(2736), EolMap.P(5600))); // Sector A
+            _pylons.Add(2, new pylonObject(EolMap.P(4901), EolMap.P(4740))); // Sector A
+            _pylons.Add(3, new pylonObject(EolMap.P(7445), EolMap.P(2356))); // Sector A
+            _pylons.Add(4, new pylonObject(EolMap.P(5504), EolMap.P(7040))); // Sector B
+            _pylons.Add(5, new pylonObject(EolMap.P(8304), EolMap.P(11008)));// Sector B
+            _pylons.Add(6, new pylonObject(EolMap.P(6784), EolMap.P(13808)));// Sector B
+            _pylons.Add(7, new pylonObject(EolMap.P(4117), EolMap.P(9956)));// Sector B
+            _pylons.Add(8, new pylonObject(EolMap.P(13765), EolMap.P(1236))); // Sector C
+            _pylons.Add(9, new pylonObject(EolMap.P(17093), EolMap.P(5076))); // Sector C
+            _pylons.Add(10, new pylonObject(EolMap.P(12565), EolMap.P(5252))); // Sector C
+            _pylons.Add(11, new pylonObject(EolMap.P(18117), EolMap.P(3316))); // Sector C
+            _pylons.Add(12, new pylonObject(EolMap.P(20661), EolMap.P(7924))); // Sector D
+            _pylons.Add(13, new pylonObject(EolMap.P(16981), EolMap.P(10580))); // Sector D
+            _pylons.Add(14, new pylonObject(EolMap.P(18064), EolMap.P(7584))); // Sector D
+            _pylons.Add(15, new pylonObject(EolMap.P(11957), EolMap.P(13604))); // Sector D
 
             _pylonsA = new Dictionary<int, pylonObject>();
-            _pylonsA.Add(0, new pylonObject(512, 480)); // Sector A
-            _pylonsA.Add(1, new pylonObject(2736, 5600)); // Sector A
-            _pylonsA.Add(2, new pylonObject(4901, 4740)); // Sector A
-            _pylonsA.Add(3, new pylonObject(7445, 2356)); // Sector A
+            _pylonsA.Add(0, new pylonObject(EolMap.P(512), EolMap.P(480))); // Sector A
+            _pylonsA.Add(1, new pylonObject(EolMap.P(2736), EolMap.P(5600))); // Sector A
+            _pylonsA.Add(2, new pylonObject(EolMap.P(4901), EolMap.P(4740))); // Sector A
+            _pylonsA.Add(3, new pylonObject(EolMap.P(7445), EolMap.P(2356))); // Sector A
 
             _pylonsB = new Dictionary<int, pylonObject>();
-            _pylonsB.Add(0, new pylonObject(5504, 7040)); // Sector B
-            _pylonsB.Add(1, new pylonObject(8304, 11008));// Sector B
-            _pylonsB.Add(2, new pylonObject(6784, 13808));// Sector B
-            _pylonsB.Add(3, new pylonObject(4117, 9956));// Sector B
+            _pylonsB.Add(0, new pylonObject(EolMap.P(5504), EolMap.P(7040))); // Sector B
+            _pylonsB.Add(1, new pylonObject(EolMap.P(8304), EolMap.P(11008)));// Sector B
+            _pylonsB.Add(2, new pylonObject(EolMap.P(6784), EolMap.P(13808)));// Sector B
+            _pylonsB.Add(3, new pylonObject(EolMap.P(4117), EolMap.P(9956)));// Sector B
 
             _pylonsC = new Dictionary<int, pylonObject>();
-            _pylonsC.Add(0, new pylonObject(13765, 1236)); // Sector C
-            _pylonsC.Add(1, new pylonObject(17093, 5076)); // Sector C
-            _pylonsC.Add(2, new pylonObject(12565, 5252)); // Sector C
-            _pylonsC.Add(3, new pylonObject(18117, 3316)); // Sector C
+            _pylonsC.Add(0, new pylonObject(EolMap.P(13765), EolMap.P(1236))); // Sector C
+            _pylonsC.Add(1, new pylonObject(EolMap.P(17093), EolMap.P(5076))); // Sector C
+            _pylonsC.Add(2, new pylonObject(EolMap.P(12565), EolMap.P(5252))); // Sector C
+            _pylonsC.Add(3, new pylonObject(EolMap.P(18117), EolMap.P(3316))); // Sector C
 
             _pylonsD = new Dictionary<int, pylonObject>();
-            _pylonsD.Add(0, new pylonObject(20661, 7924)); // Sector D
-            _pylonsD.Add(1, new pylonObject(16981, 10580)); // Sector D
-            _pylonsD.Add(2, new pylonObject(18064, 7584)); // Sector D
-            _pylonsD.Add(3, new pylonObject(11957, 13604)); // Sector D
+            _pylonsD.Add(0, new pylonObject(EolMap.P(20661), EolMap.P(7924))); // Sector D
+            _pylonsD.Add(1, new pylonObject(EolMap.P(16981), EolMap.P(10580))); // Sector D
+            _pylonsD.Add(2, new pylonObject(EolMap.P(18064), EolMap.P(7584))); // Sector D
+            _pylonsD.Add(3, new pylonObject(EolMap.P(11957), EolMap.P(13604))); // Sector D
 
             _pylonsAB = new Dictionary<int, pylonObject>();
-            _pylonsAB.Add(0, new pylonObject(512, 480)); // Sector A
-            _pylonsAB.Add(1, new pylonObject(2736, 5600)); // Sector A
-            _pylonsAB.Add(2, new pylonObject(4901, 4740)); // Sector A
-            _pylonsAB.Add(3, new pylonObject(7445, 2356)); // Sector A
-            _pylonsAB.Add(4, new pylonObject(5504, 7040)); // Sector B
-            _pylonsAB.Add(5, new pylonObject(8304, 11008));// Sector B
-            _pylonsAB.Add(6, new pylonObject(6784, 13808));// Sector B
-            _pylonsAB.Add(7, new pylonObject(4117, 9956));// Sector B
+            _pylonsAB.Add(0, new pylonObject(EolMap.P(512), EolMap.P(480))); // Sector A
+            _pylonsAB.Add(1, new pylonObject(EolMap.P(2736), EolMap.P(5600))); // Sector A
+            _pylonsAB.Add(2, new pylonObject(EolMap.P(4901), EolMap.P(4740))); // Sector A
+            _pylonsAB.Add(3, new pylonObject(EolMap.P(7445), EolMap.P(2356))); // Sector A
+            _pylonsAB.Add(4, new pylonObject(EolMap.P(5504), EolMap.P(7040))); // Sector B
+            _pylonsAB.Add(5, new pylonObject(EolMap.P(8304), EolMap.P(11008)));// Sector B
+            _pylonsAB.Add(6, new pylonObject(EolMap.P(6784), EolMap.P(13808)));// Sector B
+            _pylonsAB.Add(7, new pylonObject(EolMap.P(4117), EolMap.P(9956)));// Sector B
 
             _pylonsAC = new Dictionary<int, pylonObject>();
-            _pylonsAC.Add(0, new pylonObject(512, 480)); // Sector A
-            _pylonsAC.Add(1, new pylonObject(2736, 5600)); // Sector A
-            _pylonsAC.Add(2, new pylonObject(4901, 4740)); // Sector A
-            _pylonsAC.Add(3, new pylonObject(7445, 2356)); // Sector A
-            _pylonsAC.Add(4, new pylonObject(13765, 1236)); // Sector C
-            _pylonsAC.Add(5, new pylonObject(17093, 5076)); // Sector C
-            _pylonsAC.Add(6, new pylonObject(12565, 5252)); // Sector C
-            _pylonsAC.Add(7, new pylonObject(18117, 3316)); // Sector C
+            _pylonsAC.Add(0, new pylonObject(EolMap.P(512), EolMap.P(480))); // Sector A
+            _pylonsAC.Add(1, new pylonObject(EolMap.P(2736), EolMap.P(5600))); // Sector A
+            _pylonsAC.Add(2, new pylonObject(EolMap.P(4901), EolMap.P(4740))); // Sector A
+            _pylonsAC.Add(3, new pylonObject(EolMap.P(7445), EolMap.P(2356))); // Sector A
+            _pylonsAC.Add(4, new pylonObject(EolMap.P(13765), EolMap.P(1236))); // Sector C
+            _pylonsAC.Add(5, new pylonObject(EolMap.P(17093), EolMap.P(5076))); // Sector C
+            _pylonsAC.Add(6, new pylonObject(EolMap.P(12565), EolMap.P(5252))); // Sector C
+            _pylonsAC.Add(7, new pylonObject(EolMap.P(18117), EolMap.P(3316))); // Sector C
 
             _pylonsCD = new Dictionary<int, pylonObject>();
-            _pylonsCD.Add(0, new pylonObject(13765, 1236)); // Sector C
-            _pylonsCD.Add(1, new pylonObject(17093, 5076)); // Sector C
-            _pylonsCD.Add(2, new pylonObject(12565, 5252)); // Sector C
-            _pylonsCD.Add(3, new pylonObject(18117, 3316)); // Sector C
-            _pylonsCD.Add(4, new pylonObject(20661, 7924)); // Sector D
-            _pylonsCD.Add(5, new pylonObject(16981, 10580)); // Sector D
-            _pylonsCD.Add(6, new pylonObject(18064, 7584)); // Sector D
-            _pylonsCD.Add(7, new pylonObject(11957, 13604)); // Sector D
+            _pylonsCD.Add(0, new pylonObject(EolMap.P(13765), EolMap.P(1236))); // Sector C
+            _pylonsCD.Add(1, new pylonObject(EolMap.P(17093), EolMap.P(5076))); // Sector C
+            _pylonsCD.Add(2, new pylonObject(EolMap.P(12565), EolMap.P(5252))); // Sector C
+            _pylonsCD.Add(3, new pylonObject(EolMap.P(18117), EolMap.P(3316))); // Sector C
+            _pylonsCD.Add(4, new pylonObject(EolMap.P(20661), EolMap.P(7924))); // Sector D
+            _pylonsCD.Add(5, new pylonObject(EolMap.P(16981), EolMap.P(10580))); // Sector D
+            _pylonsCD.Add(6, new pylonObject(EolMap.P(18064), EolMap.P(7584))); // Sector D
+            _pylonsCD.Add(7, new pylonObject(EolMap.P(11957), EolMap.P(13604))); // Sector D
 
             _pylonsBD = new Dictionary<int, pylonObject>();
-            _pylonsBD.Add(0, new pylonObject(5504, 7040)); // Sector B
-            _pylonsBD.Add(1, new pylonObject(8304, 11008));// Sector B
-            _pylonsBD.Add(2, new pylonObject(6784, 13808));// Sector B
-            _pylonsBD.Add(3, new pylonObject(4117, 9956));// Sector B
-            _pylonsBD.Add(4, new pylonObject(20661, 7924)); // Sector D
-            _pylonsBD.Add(5, new pylonObject(16981, 10580)); // Sector D
-            _pylonsBD.Add(6, new pylonObject(18064, 7584)); // Sector D
-            _pylonsBD.Add(7, new pylonObject(11957, 13604)); // Sector D
+            _pylonsBD.Add(0, new pylonObject(EolMap.P(5504), EolMap.P(7040))); // Sector B
+            _pylonsBD.Add(1, new pylonObject(EolMap.P(8304), EolMap.P(11008)));// Sector B
+            _pylonsBD.Add(2, new pylonObject(EolMap.P(6784), EolMap.P(13808)));// Sector B
+            _pylonsBD.Add(3, new pylonObject(EolMap.P(4117), EolMap.P(9956)));// Sector B
+            _pylonsBD.Add(4, new pylonObject(EolMap.P(20661), EolMap.P(7924))); // Sector D
+            _pylonsBD.Add(5, new pylonObject(EolMap.P(16981), EolMap.P(10580))); // Sector D
+            _pylonsBD.Add(6, new pylonObject(EolMap.P(18064), EolMap.P(7584))); // Sector D
+            _pylonsBD.Add(7, new pylonObject(EolMap.P(11957), EolMap.P(13604))); // Sector D
 
             _usedpylons = new Dictionary<int, pylonObject>();
             _lastPylon = null;
@@ -926,13 +927,13 @@ namespace InfServer.Script.GameType_Eol
             public PylonCoordEntry(short x, short y, int id) { X = x; Y = y; Id = id; }
         }
 
-        private static readonly PylonCoordEntry[] s_pylonLocationByCoord = new PylonCoordEntry[]
+        private static PylonCoordEntry[] s_pylonLocationByCoord { get { return new PylonCoordEntry[]
         {
-            new PylonCoordEntry(512, 480, 1), new PylonCoordEntry(2736, 5600, 2), new PylonCoordEntry(4901, 4740, 3), new PylonCoordEntry(7445, 2356, 4),
-            new PylonCoordEntry(5504, 7040, 5), new PylonCoordEntry(8304, 11008, 6), new PylonCoordEntry(6784, 13808, 7), new PylonCoordEntry(4117, 9956, 8),
-            new PylonCoordEntry(13765, 1236, 9), new PylonCoordEntry(17093, 5076, 10), new PylonCoordEntry(12565, 5252, 11), new PylonCoordEntry(18117, 3316, 12),
-            new PylonCoordEntry(20661, 7924, 13), new PylonCoordEntry(16981, 10580, 14), new PylonCoordEntry(18064, 7584, 15), new PylonCoordEntry(11957, 13604, 16),
-        };
+            new PylonCoordEntry(EolMap.P(512), EolMap.P(480), 1), new PylonCoordEntry(EolMap.P(2736), EolMap.P(5600), 2), new PylonCoordEntry(EolMap.P(4901), EolMap.P(4740), 3), new PylonCoordEntry(EolMap.P(7445), EolMap.P(2356), 4),
+            new PylonCoordEntry(EolMap.P(5504), EolMap.P(7040), 5), new PylonCoordEntry(EolMap.P(8304), EolMap.P(11008), 6), new PylonCoordEntry(EolMap.P(6784), EolMap.P(13808), 7), new PylonCoordEntry(EolMap.P(4117), EolMap.P(9956), 8),
+            new PylonCoordEntry(EolMap.P(13765), EolMap.P(1236), 9), new PylonCoordEntry(EolMap.P(17093), EolMap.P(5076), 10), new PylonCoordEntry(EolMap.P(12565), EolMap.P(5252), 11), new PylonCoordEntry(EolMap.P(18117), EolMap.P(3316), 12),
+            new PylonCoordEntry(EolMap.P(20661), EolMap.P(7924), 13), new PylonCoordEntry(EolMap.P(16981), EolMap.P(10580), 14), new PylonCoordEntry(EolMap.P(18064), EolMap.P(7584), 15), new PylonCoordEntry(EolMap.P(11957), EolMap.P(13604), 16),
+        }; } }
 
         private bool TryApplyPylonLocationFromXY(short hx, short hy)
         {
@@ -1327,7 +1328,7 @@ namespace InfServer.Script.GameType_Eol
             // The daily sector change is due and nobody is here: do it now, quietly (no warning needed) - the next
             // player finds new sectors and a fresh field.
             if (_botsClearedForEmpty && _arena._bGameRunning && !_bbetweengames && !_sectorChangeCountdownActive
-                && !_kothGameRunning && _tickNextSectorRotation != 0 && now - _tickNextSectorRotation >= 0)
+                && !_kothGameRunning && _tickNextSectorRotation != 0 && now - _tickNextSectorRotation >= 0 && !EolMap.AllSectorsOpen)
             {
                 Log.write(TLog.Normal, "[Eol] Daily sector change while the arena is empty.");
                 newSectorDSRecall();
@@ -1480,6 +1481,8 @@ namespace InfServer.Script.GameType_Eol
         /// <summary>True while a sector is pinned (EolBoundaries.PinnedFirstSector) and it is the only one open.</summary>
         bool SectorRotationOnlyPinned()
         {
+            if (EolMap.AllSectorsOpen)
+                return true;   // (Eol Classic: no toxic zones - nothing to change, no warning, nobody recalled)
             string pin = EolBoundaries.PinnedFirstSector;
             if (pin == null || _eol == null || _eol._activeSectors == null)
                 return false;
@@ -4406,7 +4409,7 @@ namespace InfServer.Script.GameType_Eol
         {
             // every HQ anchor, by the sector it lies in on the barrier-wall sector map (2026-11-15: three sectors -
             // the old per-sector lists followed the straight seams)
-            if (_pylons != null && _eol.SectorAt(6305, 4277) != null)   // (null = sector map not built)
+            if (_pylons != null && _eol.SectorAt(EolMap.MapProbeX, EolMap.MapProbeY) != null)   // (null = sector map not built)
             {
                 Dictionary<int, pylonObject> mine = new Dictionary<int, pylonObject>();
                 foreach (KeyValuePair<int, pylonObject> kv in _pylons.OrderBy(k => k.Key))

@@ -20,7 +20,7 @@ namespace InfServer.Script.GameType_Eol
     public partial class Script_Eol
     {
         /// <summary>Seed tiles (on the building's floor) of the buildings bots must not spawn in.</summary>
-        static readonly short[][] NoBotSpawnBuildingSeeds = { new short[] { 361, 348 } };
+        static short[][] NoBotSpawnBuildingSeeds { get { return EolMap.NoBotSpawnBuildingSeeds; } }
 
         bool[] _noSpawnTiles;
         int _noSpawnW, _noSpawnH;

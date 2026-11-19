@@ -18,12 +18,14 @@ namespace InfServer.Script.GameType_Eol
     {
         public const bool DropshipDeployEnabled = true;
         /// <summary>Centre of the dropship's "MapPortal" (lio portal 1, 80 x 80 at 27008,2864).</summary>
-        public const short DropshipPortalX = 27048, DropshipPortalY = 2904;
+        public static short DropshipPortalX { get { return EolMap.DropshipPortalX; } }
+        public static short DropshipPortalY { get { return EolMap.DropshipPortalY; } }
         const int DeployPortalReachRaw = 72;
         /// <summary>Stuck in the dropship this long: sent through anyway.</summary>
         const int DeployTimeoutMs = 30000;
         /// <summary>Bots appear here (the dropship floor south of the portal, where players stand).</summary>
-        const short DeploySpawnX = 27016, DeploySpawnY = 3368;
+        static short DeploySpawnX { get { return EolMap.DeploySpawnX; } }
+        static short DeploySpawnY { get { return EolMap.DeploySpawnY; } }
         const int DeploySpawnRadius = 220;
         public const int BotSpawnProtectMs = 3000;
         /// <summary>(2026-11-16, owner: "50% armor increase bots"; 2026-11-17 "reduce the 50% armor increase ... to 35%. bots are too tanky") damage taken = 1 / 1.35.</summary>
@@ -69,7 +71,10 @@ namespace InfServer.Script.GameType_Eol
         }
 
         // the dropship box (EolBoundaries' safe zone)
-        const short DropshipSafeBoxMinX = 26048, DropshipSafeBoxMaxX = 28080, DropshipSafeBoxMinY = 2160, DropshipSafeBoxMaxY = 3824;
+        static short DropshipSafeBoxMinX { get { return EolMap.SafeMinX; } }
+        static short DropshipSafeBoxMaxX { get { return EolMap.SafeMaxX; } }
+        static short DropshipSafeBoxMinY { get { return EolMap.SafeMinY; } }
+        static short DropshipSafeBoxMaxY { get { return EolMap.SafeMaxY; } }
         List<Helpers.ObjectState> _dropshipSpots;
 
         /// <summary>

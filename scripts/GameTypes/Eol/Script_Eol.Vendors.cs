@@ -32,16 +32,14 @@ namespace InfServer.Script.GameType_Eol
         /// One vendor on each spot that lies in an open sector. Raw = tile x 16 + 8.
         /// Sector A: 88,299 309,80 · B: 159,684 660,800 · C: 1250,384 1231,65 812,93 1125,704 869,432 (three-sector map)
         /// </summary>
-        static readonly KeyValuePair<short, short>[] VendorTiles =
+        static KeyValuePair<short, short>[] VendorTiles
         {
-            new KeyValuePair<short, short>(88, 299), new KeyValuePair<short, short>(309, 80),
-            new KeyValuePair<short, short>(159, 684),
-            new KeyValuePair<short, short>(1250, 384), new KeyValuePair<short, short>(1231, 65), new KeyValuePair<short, short>(812, 93),
-            new KeyValuePair<short, short>(660, 800), new KeyValuePair<short, short>(1125, 704), new KeyValuePair<short, short>(869, 432),
-        };
+            get { return Array.ConvertAll(EolMap.VendorTiles, t => new KeyValuePair<short, short>(t[0], t[1])); }
+        }
         // Pioneer Station: tile 1667,165 (the zone owner's spot, 2026-11-15 - the first spot stuck him on physics), facing south.
         // Raw = tile x 16 + 8 (the tile's centre). Yaw: 240 steps a turn, 0 = north, 120 = south.
-        const short HelmetTraderX = 1667 * 16 + 8, HelmetTraderY = 165 * 16 + 8;
+        static short HelmetTraderX { get { return EolMap.HelmetTraderX; } }
+        static short HelmetTraderY { get { return EolMap.HelmetTraderY; } }
         const byte HelmetTraderYaw = 120;
         // (2026-11-15, owner: min $500 + 200 xp a helmet, a bit more for the better ones)
         const int HelmetBasePrice = 500, HelmetSpecialistPrice = 750, HelmetCommandPrice = 1000;

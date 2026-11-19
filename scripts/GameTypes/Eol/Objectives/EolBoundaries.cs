@@ -41,8 +41,8 @@ namespace InfServer.Script.GameType_Eol
         private int _boundarynotify = 21;
         const int ClosedSectorSweepIntervalMs = 1500;
         const int ClosedSectorRecallCountdownMs = 3000;
-        const short PioneerStationX = 27008;
-        const short PioneerStationY = 3360;
+        static short PioneerStationX { get { return EolMap.RecallX; } }
+        static short PioneerStationY { get { return EolMap.RecallY; } }
         int _tickLastClosedSectorSweep;
         /// <summary>Player id → tick (Environment.TickCount) when to beam to Pioneer Station.</summary>
         readonly Dictionary<int, int> _dropshipRecallDueByPlayerId = new Dictionary<int, int>();
@@ -50,10 +50,10 @@ namespace InfServer.Script.GameType_Eol
         /// Axis-aligned union of <c>PioneerRecallA</c>–<c>D</c> in <c>PioneerStation.lio</c> (dropship / neutral station).
         /// It is outside Eol radiation sectors A–C, so <see cref="IsInAnyActiveSector"/> is false there without this check.
         /// </summary>
-        const short DropshipSafeMinX = 26048;
-        const short DropshipSafeMaxX = 28080;
-        const short DropshipSafeMinY = 2160;
-        const short DropshipSafeMaxY = 3824;
+        static short DropshipSafeMinX { get { return EolMap.SafeMinX; } }
+        static short DropshipSafeMaxX { get { return EolMap.SafeMaxX; } }
+        static short DropshipSafeMinY { get { return EolMap.SafeMinY; } }
+        static short DropshipSafeMaxY { get { return EolMap.SafeMaxY; } }
         /// <summary>Padding beyond LIO recall rects so edge movement does not flicker OOB.</summary>
         const short DropshipSafePadding = 128;
 
@@ -568,6 +568,8 @@ namespace InfServer.Script.GameType_Eol
 
         private static int DesiredSectorCountForPlayers(int playing)
         {
+            if (EolMap.AllSectorsOpen)
+                return SectorCount;   // (Eol Classic: the whole map is used, no toxic zones)
             if (playing < 30)
                 return 1;
             if (playing < 46)

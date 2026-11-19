@@ -17,7 +17,8 @@ namespace InfServer.Script.GameType_Eol
     public partial class EolBoundaries
     {
         /// <summary>The play map in tiles (outside it: no sector).</summary>
-        const int PlayMapMaxTileX = 1377, PlayMapMaxTileY = 896;
+        static int PlayMapMaxTileX { get { return EolMap.PlayMapMaxTileX; } }
+        static int PlayMapMaxTileY { get { return EolMap.PlayMapMaxTileY; } }
 
         /// <summary>A seed tile on open ground in each sector (A: the NW dropship buffer, B: the SW open ground, C: the NE buffer).</summary>
         static readonly int[,] SectorSeedTiles = { { 394, 267 }, { 250, 800 }, { 932, 127 } };
@@ -87,6 +88,17 @@ namespace InfServer.Script.GameType_Eol
             byte[] map = new byte[w * h];
             Queue<int> q = new Queue<int>();
 
+            // (2026-11-19) Eol Classic: no barrier walls and no toxic zones - the play map is cut into three bands west to
+            // east (A, B, C) only so the code that works per sector keeps working; every sector is always open.
+            if (EolMap.Classic)
+            {
+                for (int y = 0; y < h; y++)
+                    for (int x = 0; x < w; x++)
+                        map[y * w + x] = (byte)(x < w / 3 ? 1 : x < 2 * w / 3 ? 2 : 3);
+                FinishSectorMap(map, w, h);
+                return;
+            }
+
             // 1) each sector's open ground: flood from its seed, never through a wall
             for (int s = 0; s < SectorSeedTiles.GetLength(0); s++)
             {
@@ -137,6 +149,11 @@ namespace InfServer.Script.GameType_Eol
                 }
             }
 
+            FinishSectorMap(map, w, h);
+        }
+
+        void FinishSectorMap(byte[] map, int w, int h)
+        {
             // 3) each sector's bounding box (raw) - for "pick a random point, then test SectorAt" callers
             for (int s = 1; s <= 3; s++) { _sectorBox[s, 0] = short.MaxValue; _sectorBox[s, 1] = short.MinValue; _sectorBox[s, 2] = short.MaxValue; _sectorBox[s, 3] = short.MinValue; }
             int[] count = new int[4];

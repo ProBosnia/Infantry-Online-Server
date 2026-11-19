@@ -41,7 +41,7 @@ namespace InfServer.Script.GameType_Eol
             string s = m == null ? null : m.SectorAt(x, y);
             if (s != null)
                 return s == m.sectorA;
-            if (m != null && m.SectorAt(6305, 4277) != null)
+            if (m != null && m.SectorAt(EolMap.MapProbeX, EolMap.MapProbeY) != null)
                 return false;   // (map built: outside the play map)
             return NwSectorFallback.Has(x, y);
         }

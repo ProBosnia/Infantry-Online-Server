@@ -46,21 +46,26 @@ namespace InfServer.Script.GameType_Eol
         const int SwarmRefillMs = 12000;              // then a replacement every 12 s
         const int SwarmDeployTimeoutMs = 25000;
         /// <summary>The bug cave, in tiles: where bugs appear and the portal they walk into.</summary>
-        const short SwarmCaveTileX = 1639, SwarmCaveTileY = 418;
+        static short SwarmCaveTileX { get { return EolMap.CaveTileX; } }
+        static short SwarmCaveTileY { get { return EolMap.CaveTileY; } }
         /// <summary>(2026-11-16e) the zone owner's floor hole in the cave (9 x 9 tiles, x 1701-1709, y 412-420).</summary>
-        const short SwarmCavePortalTileX = 1705, SwarmCavePortalTileY = 416;
+        static short SwarmCavePortalTileX { get { return EolMap.CavePortalTileX; } }
+        static short SwarmCavePortalTileY { get { return EolMap.CavePortalTileY; } }
         const int SwarmCaveSpawnRadius = 160;
         /// <summary>Where the nest comes up, in tiles, in turn (the owner's spots: A3, then the south-west).</summary>
-        static readonly short[][] SwarmSitesTiles = { new short[] { 76, 178 }, new short[] { 55, 419 }, new short[] { 342, 260 } };
+        static short[][] SwarmSitesTiles { get { return EolMap.SwarmSites; } }
         /// <summary>(2026-11-18, owner: "add a possible queen spawn in this area 342,260 and 448,259 and 230,246 and 629,64")
         /// the third site (index 2): one of these, at random among those in an open sector.</summary>
-        static readonly short[][] SwarmExtraSpotsTiles = { new short[] { 342, 260 }, new short[] { 448, 259 }, new short[] { 230, 246 }, new short[] { 629, 64 } };
+        static short[][] SwarmExtraSpotsTiles { get { return EolMap.SwarmExtraSpots; } }
         /// <summary>(2026-11-17, owner) the A3 site (index 0) is one of these, picked at random each time.</summary>
-        static readonly short[][] SwarmA3SpotsTiles = { new short[] { 96, 175 }, new short[] { 54, 156 }, new short[] { 17, 131 }, new short[] { 33, 213 } };
+        static short[][] SwarmA3SpotsTiles { get { return EolMap.SwarmA3Spots; } }
         /// <summary>(2026-11-17, owner) the A6 site (index 1) is one of these, picked at random each time.</summary>
-        static readonly short[][] SwarmA6SpotsTiles = { new short[] { 21, 389 }, new short[] { 54, 375 }, new short[] { 52, 414 }, new short[] { 95, 416 } };
+        static short[][] SwarmA6SpotsTiles { get { return EolMap.SwarmA6Spots; } }
         /// <summary>The A6 area (tiles) the swarm and the bases share: x 0-119, y 355-440 (round the four A6 spots).</summary>
-        const short SwarmA6MinTX = 0, SwarmA6MaxTX = 119, SwarmA6MinTY = 355, SwarmA6MaxTY = 440;
+        static short SwarmA6MinTX { get { return EolMap.SwarmA6MinTX; } }
+        static short SwarmA6MaxTX { get { return EolMap.SwarmA6MaxTX; } }
+        static short SwarmA6MinTY { get { return EolMap.SwarmA6MinTY; } }
+        static short SwarmA6MaxTY { get { return EolMap.SwarmA6MaxTY; } }
 
         static bool InSwarmA6(int rawX, int rawY)
         {
@@ -641,7 +646,7 @@ namespace InfServer.Script.GameType_Eol
         }
         readonly Dictionary<Bots.Bot, int> _swarmChaseUntil = new Dictionary<Bots.Bot, int>();
         /// <summary>The choke the owner reported (tiles, A6): a bug found in it is moved straight back to a post.</summary>
-        static readonly short[][] SwarmChokeTiles = { new short[] { 145, 410 } };
+        static short[][] SwarmChokeTiles { get { return EolMap.SwarmChokeTiles; } }
         const int SwarmChokeRadius = 10 * 16;
 
         readonly HashSet<Bots.Bot> _swarmReturning = new HashSet<Bots.Bot>();

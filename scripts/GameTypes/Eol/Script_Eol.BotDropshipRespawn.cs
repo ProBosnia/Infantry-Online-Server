@@ -30,8 +30,8 @@ namespace InfServer.Script.GameType_Eol
         /// <summary>Alien horde — leave after this many deaths.</summary>
         public const int BotMaxDeathsAlien = 4;
         /// <summary>Pioneer Station (map search origin / legacy recall coords).</summary>
-        public const short BotDropshipRecallX = 27008;
-        public const short BotDropshipRecallY = 3360;
+        public static short BotDropshipRecallX { get { return EolMap.RecallX; } }
+        public static short BotDropshipRecallY { get { return EolMap.RecallY; } }
         public const int BotDropshipRecallWarpRadius = 300;
 
         struct BotAnchorRespawnState
