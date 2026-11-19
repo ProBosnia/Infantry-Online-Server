@@ -1981,6 +1981,8 @@ namespace InfServer.Script.GameType_Eol
             int playing = _arena.PlayerCount;
             int botPop = EolBotPopulationForCaps(playing);
 
+            PollRealPlayersTicker(now);   // (2026-11-19) "Real players: N" on its own HUD row
+
             if (PollEmptyArena(now))
                 return true;
 
@@ -3242,7 +3244,28 @@ namespace InfServer.Script.GameType_Eol
             string open = FormatEolOpenSectorsTickerPrefix();
             string threat = BuildEolThreatTickerLine();
             string hunt = null;   // (2026-11-17, owner: the 30k hunt is not announced - no HUD line)
-            return JoinEolTickerParts(RealPlayersTickerPart(), open, threat, hunt);
+            return JoinEolTickerParts(open, threat, hunt);
+        }
+
+        /// <summary>(2026-11-19, owner: "the real players count seems to disappear, have it as a separate counter") its own
+        /// HUD row (4 - nothing else in Eol uses it), so KOTH timers / sector warnings on row 2 never push it off.</summary>
+        const int RealPlayersTickerIdx = 4;
+        string _lastRealPlayersTicker;
+        int _tickRealPlayersTicker;
+
+        void PollRealPlayersTicker(int now)
+        {
+            if (_arena == null || now - _tickRealPlayersTicker < 1000)
+                return;
+            _tickRealPlayersTicker = now;
+            string text = RealPlayersTickerPart();
+            Arena.TickerInfo live = null;
+            bool showing = _arena._tickers != null && _arena._tickers.TryGetValue(RealPlayersTickerIdx, out live) && live != null
+                && live.timer != -1 && string.Equals(live.message, text, StringComparison.Ordinal);
+            if (showing && string.Equals(text, _lastRealPlayersTicker, StringComparison.Ordinal))
+                return;
+            _lastRealPlayersTicker = text;
+            _arena.setTicker(0, RealPlayersTickerIdx, 0, text);
         }
 
         /// <summary>Short bot/wave (+ hunt) summary for ticker row 0 while row 2 is used for crown timers.</summary>
@@ -3251,7 +3274,9 @@ namespace InfServer.Script.GameType_Eol
             string open = FormatEolOpenSectorsTickerPrefix();
 
             string basePart;
-            if (!EolBaseBotsEnabled)
+            if (true)
+                basePart = null;   // (2026-11-19, owner: "you still have base 30/30 please remove that counter. there is no need for that")
+            else if (!EolBaseBotsEnabled)
                 basePart = "Base Off";
             else
             {
