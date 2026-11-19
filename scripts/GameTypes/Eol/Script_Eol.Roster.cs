@@ -16,8 +16,8 @@ namespace InfServer.Script.GameType_Eol
     /// </summary>
     public partial class Script_Eol
     {
-        public const int EolBotTotalTarget = 79;   // (2026-11-17: swarm 10 -> 12) // (2026-11-17: human + pirate squads of 6, vehicle squad 4; was 70)   // (2026-11-16c, owner: "around 70")
-        public const int RosterBaseTeams = 2;
+        public const int EolBotTotalTarget = 89;   // (2026-11-19, owner: "add another team of 10 for a base bots" - a third base)   // (2026-11-17: swarm 10 -> 12) // (2026-11-17: human + pirate squads of 6, vehicle squad 4; was 70)   // (2026-11-16c, owner: "around 70")
+        public const int RosterBaseTeams = 3;   // (2026-11-19: + Steel Wardens, a third base of 10)
         public const int RosterBaseSize = EolMaxConcurrentBaseDefenseBots;   // 10
         public const int RosterAlienMainSize = 8;
         public const int RosterVehicleSquadSize = 5;   // (2026-11-17: + the board medic on a Hoverboard) // (2026-11-17, owner: Deathboard, Shimmerboard, Drop Pack + a SciOps on a Flight Pack)
@@ -51,7 +51,7 @@ namespace InfServer.Script.GameType_Eol
             for (int i = 0; i < RosterMixedTeamCount; i++)
                 _rosterMixedSize[i] = SquadMaxSize;
             int rest = EolBotTotalTarget - (RosterBaseTeams * RosterBaseSize + _rosterPirateRoamers + _rosterHumanRoamers
-                + aliens + RosterVehicleSquadSize + RosterMixedTeamCount * SquadMaxSize);   // 0 (2026-11-17: 20 + 6 + 6 + 30 + 12 + 5 = 79)
+                + aliens + RosterVehicleSquadSize + RosterMixedTeamCount * SquadMaxSize);   // 0 (2026-11-19: 30 + 6 + 6 + 30 + 12 + 5 = 89)
             for (int guard = 0; rest > 0 && guard < 1000; guard++)
             {
                 int i = r.Next(RosterMixedTeamCount + 1);
@@ -110,7 +110,7 @@ namespace InfServer.Script.GameType_Eol
 
         /// <summary>(2026-11-16, owner: 26 bots on one team) hard caps for every spawn path.</summary>
         public const int EolMaxBotsPerTeam = 10;
-        public const int EolMaxBotsTotal = 81;   // (2026-11-17: 78 -> 80 with the swarm of 12)   // (roster 70 + a little room for bots changing over)
+        public const int EolMaxBotsTotal = 91;   // (2026-11-19: + the third base of 10)   // (2026-11-17: 78 -> 80 with the swarm of 12)   // (roster 70 + a little room for bots changing over)
 
         /// <summary>
         /// True when one more bot may join <paramref name="team"/>: under 10 live (or about-to-revive) bots on that
