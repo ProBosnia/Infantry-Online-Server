@@ -83,7 +83,9 @@ namespace InfServer.Script.GameType_Eol
         static readonly short[][] NoSpawnP = { new short[] { 361, 348 } };
         public static short[][] NoBotSpawnBuildingSeeds { get { return Classic ? None : NoSpawnP; } }
         static readonly short[][] VendorP = { new short[] { 88, 299 }, new short[] { 309, 80 }, new short[] { 159, 684 }, new short[] { 1250, 384 }, new short[] { 1231, 65 }, new short[] { 812, 93 }, new short[] { 660, 800 }, new short[] { 1125, 704 }, new short[] { 869, 432 } };
-        static readonly short[][] VendorC = { new short[] { 85, 261 }, new short[] { 246, 67 }, new short[] { 133, 593 }, new short[] { 998, 304 }, new short[] { 1023, 54 }, new short[] { 678, 78 }, new short[] { 540, 657 }, new short[] { 939, 588 }, new short[] { 726, 361 } };
+        static readonly short[][] VendorC = { new short[] { 71, 12 }, new short[] { 208, 669 }, new short[] { 317, 350 }, new short[] { 580, 538 }, new short[] { 635, 211 }, new short[] { 850, 719 }, new short[] { 859, 15 }, new short[] { 1111, 440 }, new short[] { 1145, 58 } };
+        // (2026-11-19, owner: "have these randomly across the map where it makes sense") 9 spread-out outdoor spots on the
+        // main walkable area, each 25-70 tiles from a flag (near the fighting, not in a base)
         public static short[][] VendorTiles { get { return Classic ? VendorC : VendorP; } }
     }
 }
