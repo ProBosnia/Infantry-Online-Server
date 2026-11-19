@@ -69,10 +69,15 @@ namespace InfServer.Script.GameType_Eol
         static readonly short[][] A6C = { new short[] { 18, 325 }, new short[] { 45, 313 }, new short[] { 43, 343 }, new short[] { 81, 347 } };
         public static short[][] SwarmA6Spots { get { return Classic ? A6C : A6P; } }
         /// <summary>The area round the A6 spots (tiles) that the swarm and the bases share: min x, max x, min y, max y.</summary>
-        public static short SwarmA6MinTX { get { return 0; } }
+        public static short SwarmA6MinTX { get { return Classic ? short.MaxValue : (short)0; } }
         public static short SwarmA6MaxTX { get { return Classic ? (short)99 : (short)119; } }
         public static short SwarmA6MinTY { get { return Classic ? (short)296 : (short)355; } }
         public static short SwarmA6MaxTY { get { return Classic ? (short)367 : (short)440; } }
+        /// <summary>(2026-11-19, owner: "alien queen can now spawn randomly in these spots: B3, D4, E4, F4, A5, C9, J9, J8, K2, K5")
+        /// Eol Classic: one open outdoor spot (tiles) in each of those map squares (80 x 80 tiles); the queen comes up at one of
+        /// them at random each time. Empty on Pioneer (its rotating A3 / A6 / extra sites stay).</summary>
+        static readonly short[][] QueenC = { new short[] { 130, 209 } /*B3*/, new short[] { 280, 280 } /*D4*/, new short[] { 352, 288 } /*E4*/, new short[] { 440, 280 } /*F4*/, new short[] { 43, 365 } /*A5*/, new short[] { 200, 680 } /*C9*/, new short[] { 762, 682 } /*J9*/, new short[] { 763, 596 } /*J8*/, new short[] { 840, 120 } /*K2*/, new short[] { 840, 378 } /*K5*/ };
+        public static short[][] SwarmQueenSpots { get { return Classic ? QueenC : None; } }
         static readonly short[][] None = new short[0][];
         static readonly short[][] SwarmChokeP = { new short[] { 145, 410 } };
         public static short[][] SwarmChokeTiles { get { return Classic ? None : SwarmChokeP; } }

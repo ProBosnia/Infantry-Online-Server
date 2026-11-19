@@ -217,6 +217,13 @@ namespace InfServer.Script.GameType_Eol
             }
             // the next site that is open right now (radiation sectors rotate)
             Helpers.ObjectState site = null;
+            // (2026-11-19) Eol Classic: one of the owner's ten map squares, at random (no rotation, every sector is open)
+            if (EolMap.SwarmQueenSpots.Length > 0)
+            {
+                short[] t = EolMap.SwarmQueenSpots[_arena._rand.Next(EolMap.SwarmQueenSpots.Length)];
+                short qx = TileRaw(t[0]), qy = TileRaw(t[1]);
+                site = findOpenWarpBot(_arena, qx, qy, 120) ?? new Helpers.ObjectState { positionX = qx, positionY = qy };
+            }
             for (int i = 0; i < SwarmSitesTiles.Length && site == null; i++)
             {
                 int idx = (_swarmSiteIndex + i) % SwarmSitesTiles.Length;
