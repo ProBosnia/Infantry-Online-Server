@@ -587,7 +587,7 @@ namespace InfServer.Script.GameType_Eol
                         for (int ox = -16; ox <= 16 && open; ox += 16)
                             if (_arena.getTile((short)(x + ox), (short)(y + oy)).Blocked)
                                 open = false;
-                    if (open && WideLineClear(nx, ny, x, y) && InPlayArea(x, y, 0))
+                    if (open && WideLineClear(nx, ny, x, y) && InPlayArea(x, y, 0) && !NearNewPlayerBuffer(x, y))   // (2026-11-19: no post by the players' landing zone)
                         _swarmPosts.Add(new Helpers.ObjectState { positionX = x, positionY = y });
                 }
             Log.write(TLog.Normal, "[Eol] {0} guard posts: {1}", _sw.Title, _swarmPosts.Count);
