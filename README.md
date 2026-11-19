@@ -20,6 +20,8 @@ bots and the Eol game type), built on the ModalInc `Mode` branch of the Free Inf
 <zoneConfig value="ChaosInEol.cfg" />
 <gameType value="GameType_Eol" />
 <zoneName value="Chaos in Eol" />
+<!-- the briefing shown in the zone list -->
+<zoneDescription value="Chaos in Eol - Eol Classic revamped with Bases, Aliens, CTF, Vehicles and more!" />
 <!-- welcome popup on login, "|" = new line (server engine change in this repo) -->
 <loginPopup value="Welcome to Chaos in Eol!|You can join a bot team with ?team, and you can command them.||Objectives: Capture flags and hold them for rewards and experience. Win King of the Hill (KOTH) by being the last one standing with a crown, or increase your bounty to 30k for the maximum bonus reward on each frag." />
 ```
