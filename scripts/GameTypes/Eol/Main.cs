@@ -7089,7 +7089,12 @@ namespace InfServer.Script.GameType_Eol
 
             ClampBountyToZero(player);
 
-            player.sendMessage(4,
+            // (2026-11-19) Chaos in Eol: its own welcome instead of Pioneer's beta note. (This handler is the one that runs: the
+            // engine calls only the FIRST "Player.EnterArena" handler - playerEnterArena further down never runs.)
+            if (EolMap.ChaosInEol)
+                SendChaosInEolWelcome(player);
+            else
+                player.sendMessage(4,
                       "#This zone is currently in Beta testing. While it's under development, Please wipecharacter if you need starting cash and exp " +
                       "please leave any bug finds or feedback on our discord, in the Eol Channel. Thanks!");
 
@@ -7896,7 +7901,6 @@ namespace InfServer.Script.GameType_Eol
         public void playerEnterArena(InfServer.Game.Player player)
         {
             EnsureKillStreak(player);
-            SendChaosInEolWelcome(player);
 
             //Send them the crowns..
             if (!_playerCrownStatus.ContainsKey(player))
