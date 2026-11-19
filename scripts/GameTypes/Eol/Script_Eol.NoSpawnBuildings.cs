@@ -135,7 +135,7 @@ namespace InfServer.Script.GameType_Eol
                 alive.Add(b);
                 if (_noSpawnSeenAlive.Contains(b))
                     continue;   // (already checked when it came alive)
-                if (IsDeploying(b) || _swarmDeploying.ContainsKey(b))
+                if (IsDeploying(b) || SwarmBugDeploying(b))
                     continue;   // (still in the dropship / bug cave: checked once it lands)
                 _noSpawnSeenAlive.Add(b);
                 if (!InNoBotSpawnBuilding(b._state.positionX, b._state.positionY))

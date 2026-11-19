@@ -316,8 +316,9 @@ namespace InfServer.Script.GameType_Eol
                 if (b is RoamingAttacker && (IsRoamingSquadTeam(b._team) || IsRoamBotTeam(b._team))
                     && _eol.IsInPioneerDropshipSafeZone(x, y) && !IsDeploying(b) && ShipSummonHold(b) == null)   // (not one summoned in by its player)
                     BeginDeploy(b, now);
-                else if (b is AlienHorde && IsSwarmTeam(b._team) && !_swarmDeploying.ContainsKey(b)
-                    && x >= 1617 * 16 && x <= 1716 * 16 && y >= 394 * 16 && y <= 438 * 16)
+                else if (b is AlienHorde && IsSwarmTeam(b._team) && !SwarmBugDeploying(b)
+                    && x >= CaveTX(1617) * 16 && x <= CaveTX(1716) * 16 && y >= CaveTY(394) * 16 && y <= CaveTY(438) * 16
+                    && UseSwarmOf(b._team))
                     BeginSwarmDeploy(b, now);
             }
         }

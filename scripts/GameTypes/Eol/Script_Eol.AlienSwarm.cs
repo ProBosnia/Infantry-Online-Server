@@ -37,7 +37,84 @@ namespace InfServer.Script.GameType_Eol
         const int SwarmQueenMiscItemId = 1397;   // AS&D: Alien Hot Spit + a Wasp Drone out each side
         public Vehicle SwarmNest { get { return _swarmNest; } }
         /// <summary>Where the Queen came up - she wanders round it and never strays far.</summary>
-        public Helpers.ObjectState SwarmHome { get; private set; }
+        public Helpers.ObjectState SwarmHome { get { return _sw.Home; } private set { _sw.Home = value; } }
+
+        // ---------- (2026-11-19, owner: "lets also do another alien swarm, this time its an alien King ... instead of the pink
+        // weapon the queen has, he has an alien flame thrower [the Pirate Flamer, owner's pick]. and they should always spawn
+        // on opposite sides of the map. make the king a different color too ... red") two swarms, the same code: all the
+        // swarm's state lives in a SwarmRun; _sw is the one being worked on (every entry point picks it first). ----------
+        /// <summary>The Alien King (veh 837 in EolClassic.veh): the Queen's body in red, the Pirate Flamer instead of BioBurst.</summary>
+        const ushort SwarmKingBotVehId = 837;
+        /// <summary>The King only on Eol Classic (Pioneer's .veh has no 837).</summary>
+        static bool AlienKingEnabled { get { return EolMap.Classic; } }
+        class SwarmRun
+        {
+            public string Title;            // "Alien Queen" / "Alien King"
+            public ushort BotVehId;
+            public Team Team;
+            public Vehicle Nest;
+            public bool Active, Opening;
+            public int NextTick, NextBugTick, SiteIndex, TickPoll, NestGoneTick, TickRally;
+            public Helpers.ObjectState Home;
+            public readonly Dictionary<Bots.Bot, int> Deploying = new Dictionary<Bots.Bot, int>();
+            public List<Helpers.ObjectState> Posts;
+            public Vehicle PostsFor;
+            public readonly Dictionary<Bots.Bot, int> PostOf = new Dictionary<Bots.Bot, int>();
+            public readonly Dictionary<Bots.Bot, int> PostUntil = new Dictionary<Bots.Bot, int>();
+            public readonly Dictionary<Bots.Bot, Helpers.ObjectState> LoiterAt = new Dictionary<Bots.Bot, Helpers.ObjectState>();
+            public readonly Dictionary<Bots.Bot, int> LoiterNext = new Dictionary<Bots.Bot, int>();
+            public readonly Dictionary<Bots.Bot, int> ChaseUntil = new Dictionary<Bots.Bot, int>();
+            public readonly HashSet<Bots.Bot> Returning = new HashSet<Bots.Bot>();
+            public readonly Dictionary<Bots.Bot, StuckSample> Stuck = new Dictionary<Bots.Bot, StuckSample>();
+        }
+        readonly SwarmRun _queenRun = new SwarmRun { Title = "Alien Queen", BotVehId = SwarmQueenBotVehId };
+        readonly SwarmRun _kingRun = new SwarmRun { Title = "Alien King", BotVehId = SwarmKingBotVehId };
+        SwarmRun _swCur;
+        SwarmRun _sw { get { return _swCur ?? _queenRun; } set { _swCur = value; } }
+        IEnumerable<SwarmRun> SwarmRuns()
+        {
+            yield return _queenRun;
+            if (AlienKingEnabled && _kingRun.Team != null)
+                yield return _kingRun;
+        }
+        public int SwarmRunCount { get { return AlienKingEnabled ? 2 : 1; } }
+        SwarmRun SwarmRunOf(Team t)
+        {
+            if (t == null) return null;
+            foreach (SwarmRun r in SwarmRuns()) if (r.Team == t) return r;
+            return null;
+        }
+        /// <summary>Works on the swarm this team belongs to; false = not a swarm team.</summary>
+        bool UseSwarmOf(Team t)
+        {
+            SwarmRun r = SwarmRunOf(t);
+            if (r == null) return false;
+            _sw = r;
+            return true;
+        }
+        /// <summary>The nest (Queen / King) of this swarm team, or null.</summary>
+        public Vehicle SwarmNestOf(Team t) { SwarmRun r = SwarmRunOf(t); return r == null ? null : r.Nest; }
+        /// <summary>Where this Queen / King came up.</summary>
+        public Helpers.ObjectState SwarmHomeOf(Vehicle nest)
+        {
+            foreach (SwarmRun r in SwarmRuns()) if (r.Nest == nest) return r.Home;
+            return null;
+        }
+        /// <summary>This swarm team's nest is up (its bugs come back through the cave).</summary>
+        public bool SwarmAliveFor(Team t) { SwarmRun r = SwarmRunOf(t); return r != null && r.Active && r.Nest != null && !r.Nest.IsDead; }
+        public bool SwarmBugDeploying(Bots.Bot b) { SwarmRun r = b == null ? null : SwarmRunOf(b._team); return r != null && r.Deploying.ContainsKey(b); }
+        /// <summary>The live Queen / King close to a point, by name (for "killed by"), or null.</summary>
+        public string SwarmNestNameNear(short x, short y, int range)
+        {
+            foreach (SwarmRun r in SwarmRuns())
+                if (r.Nest != null && !r.Nest.IsDead && r.Nest._state != null
+                    && Helpers.distanceTo(r.Nest._state, new Helpers.ObjectState { positionX = x, positionY = y }) < range)
+                    return r.Title;
+            return null;
+        }
+        /// <summary>The cave in tiles (Pioneer's cave box, moved with the cave on Classic).</summary>
+        static int CaveTX(int pioneerTile) { return pioneerTile + EolMap.CaveTileX - 1639; }
+        static int CaveTY(int pioneerTile) { return pioneerTile + EolMap.CaveTileY - 418; }
         public const int SwarmDefenders = 12;   // (2026-11-17, owner: "have the alien base team 12 instead"; was 10)
         public const int SwarmRewardCash = 24525, SwarmRewardExp = 6500,   /* (2026-11-17, owner; was 95k / 12k) (2026-11-19, owner: cash 31,200 -> 24,525) */ SwarmRewardPoints = EolBotHqDestroyPointsPerPlayer;   // (2026-11-16f, owner: was 90k / 13k)
         const int SwarmReturnMs = 5 * 60 * 1000;
@@ -89,8 +166,11 @@ namespace InfServer.Script.GameType_Eol
         /// Queen is up in A6 - no base may go up there.</summary>
         public bool SwarmHoldsA6(short x, short y)
         {
-            return _swarmActive && _swarmNest != null && !_swarmNest.IsDead && _swarmNest._state != null
-                && InSwarmA6(_swarmNest._state.positionX, _swarmNest._state.positionY) && InSwarmA6(x, y);
+            foreach (SwarmRun r in SwarmRuns())
+                if (r.Active && r.Nest != null && !r.Nest.IsDead && r.Nest._state != null
+                    && InSwarmA6(r.Nest._state.positionX, r.Nest._state.positionY) && InSwarmA6(x, y))
+                    return true;
+            return false;
         }
         /// <summary>Bug mix: Arachnomorph, Electromorph, Predator, Warrior, Brute - and one Alien Chief.</summary>
         /// (2026-11-17, owner: "bots can only be created car vehicles" in the log) the Alien Brute 433 is a Computer
@@ -115,14 +195,17 @@ namespace InfServer.Script.GameType_Eol
             return fewest[_arena._rand.Next(fewest.Count)];
         }
 
-        public Team botTeamSwarm;
-        Vehicle _swarmNest;
-        bool _swarmActive;
-        int _swarmNextTick, _swarmNextBugTick, _swarmSiteIndex, _tickSwarmPoll;
-        readonly Dictionary<Bots.Bot, int> _swarmDeploying = new Dictionary<Bots.Bot, int>();
+        public Team botTeamSwarm { get { return _sw.Team; } }
+        Vehicle _swarmNest { get { return _sw.Nest; } set { _sw.Nest = value; } }
+        bool _swarmActive { get { return _sw.Active; } set { _sw.Active = value; } }
+        int _swarmNextTick { get { return _sw.NextTick; } set { _sw.NextTick = value; } }
+        int _swarmNextBugTick { get { return _sw.NextBugTick; } set { _sw.NextBugTick = value; } }
+        int _swarmSiteIndex { get { return _sw.SiteIndex; } set { _sw.SiteIndex = value; } }
+        int _tickSwarmPoll { get { return _sw.TickPoll; } set { _sw.TickPoll = value; } }
+        Dictionary<Bots.Bot, int> _swarmDeploying { get { return _sw.Deploying; } }
         List<Helpers.ObjectState> _caveSpots;
 
-        public bool IsSwarmTeam(Team t) { return t != null && t == botTeamSwarm; }
+        public bool IsSwarmTeam(Team t) { return t != null && SwarmRunOf(t) != null; }
 
         /// <summary>The swarm and the alien packs are all bugs: allies.</summary>
         public bool IsBugTeam(Team t) { return IsAlienBotTeam(t) || IsSwarmTeam(t); }
@@ -131,10 +214,22 @@ namespace InfServer.Script.GameType_Eol
 
         void CreateSwarmTeam()
         {
-            botTeamSwarm = CreateAndRegisterBotTeam("Alien Swarm Bots");
+            _queenRun.Team = CreateAndRegisterBotTeam("Alien Swarm Bots");
+            if (AlienKingEnabled)
+                _kingRun.Team = CreateAndRegisterBotTeam("Alien King Swarm Bots");
         }
 
         void PollAlienSwarm(int now)
+        {
+            foreach (SwarmRun r in SwarmRuns())
+            {
+                _sw = r;
+                PollAlienSwarmRun(now);
+            }
+            _sw = null;
+        }
+
+        void PollAlienSwarmRun(int now)
         {
             if (!AlienSwarmEnabled || botTeamSwarm == null || _arena == null || !_arena._bGameRunning || _bbetweengames
                 || _eol == null || !_eol.MatchSectorPlayReady || !EolHasArenaPresence())
@@ -186,8 +281,8 @@ namespace InfServer.Script.GameType_Eol
             }
         }
 
-        bool _swarmOpening;
-        int _swarmNestGoneTick;
+        bool _swarmOpening { get { return _sw.Opening; } set { _sw.Opening = value; } }
+        int _swarmNestGoneTick { get { return _sw.NestGoneTick; } set { _sw.NestGoneTick = value; } }
 
         bool SwarmHasChief()
         {
@@ -220,7 +315,7 @@ namespace InfServer.Script.GameType_Eol
             // (2026-11-19) Eol Classic: one of the owner's ten map squares, at random (no rotation, every sector is open)
             if (EolMap.SwarmQueenSpots.Length > 0)
             {
-                short[] t = EolMap.SwarmQueenSpots[_arena._rand.Next(EolMap.SwarmQueenSpots.Length)];
+                short[] t = PickSwarmSpotOppositeOther(EolMap.SwarmQueenSpots);
                 short qx = TileRaw(t[0]), qy = TileRaw(t[1]);
                 site = findOpenWarpBot(_arena, qx, qy, 120) ?? new Helpers.ObjectState { positionX = qx, positionY = qy };
             }
@@ -257,20 +352,38 @@ namespace InfServer.Script.GameType_Eol
             _swarmOpening = true;
             _swarmNextBugTick = now;
             EnqueueExplosionRoute(AlienCrashExplosionProjectileId, site.positionX, site.positionY, 0, 0, 0);
-            _arena.sendArenaMessage("&An Alien Queen has appeared! (" + Helpers.posToLetterCoord(site.positionX, site.positionY) + ")",
+            _arena.sendArenaMessage("&An " + _sw.Title + " has appeared! (" + Helpers.posToLetterCoord(site.positionX, site.positionY) + ")",
                 _config.flag.victoryWarningBong);
-            Log.write(TLog.Normal, "[Eol] Alien swarm nest up at {0},{1}.", site.positionX, site.positionY);
+            Log.write(TLog.Normal, "[Eol] {0} swarm up at {1},{2}.", _sw.Title, site.positionX, site.positionY);
+        }
+
+        /// <summary>
+        /// (2026-11-19, owner: "they should always spawn on opposite sides of the map") with the other swarm up, one of the
+        /// two spots farthest from its Queen / King; otherwise any spot.
+        /// </summary>
+        short[] PickSwarmSpotOppositeOther(short[][] spots)
+        {
+            Vehicle other = null;
+            foreach (SwarmRun r in SwarmRuns())
+                if (r != _sw && r.Active && r.Nest != null && !r.Nest.IsDead && r.Nest._state != null)
+                    other = r.Nest;
+            if (other == null)
+                return spots[_arena._rand.Next(spots.Length)];
+            List<short[]> byFar = new List<short[]>(spots);
+            short ox = other._state.positionX, oy = other._state.positionY;
+            byFar.Sort((a, b) => Helpers.distanceTo(ox, oy, TileRaw(b[0]), TileRaw(b[1])).CompareTo(Helpers.distanceTo(ox, oy, TileRaw(a[0]), TileRaw(a[1]))));
+            return byFar[_arena._rand.Next(Math.Min(2, byFar.Count))];
         }
 
         /// <summary>The moving Queen as a bot (null: her vehicle isn't a Car in this zone - the standing one is used).</summary>
         Vehicle SpawnSwarmQueen(Helpers.ObjectState site)
         {
-            if (!(_arena._server._assets.getVehicleByID(SwarmQueenBotVehId) is VehInfo.Car))
+            if (!(_arena._server._assets.getVehicleByID(_sw.BotVehId) is VehInfo.Car))
             {
-                Log.write(TLog.Warning, "[Eol] Alien Queen bot vehicle {0} missing / not a Car - the standing Queen is used.", SwarmQueenBotVehId);
+                Log.write(TLog.Warning, "[Eol] {0} bot vehicle {1} missing / not a Car - the standing Queen is used.", _sw.Title, _sw.BotVehId);
                 return null;
             }
-            AlienHorde q = _arena.newBot(typeof(AlienHorde), SwarmQueenBotVehId, botTeamSwarm, null, site, this, null) as AlienHorde;
+            AlienHorde q = _arena.newBot(typeof(AlienHorde), _sw.BotVehId, botTeamSwarm, null, site, this, null) as AlienHorde;
             if (q == null)
                 return null;
             ItemInfo mi = _arena._server._assets.getItemByID(SwarmQueenMiscItemId);
@@ -284,8 +397,11 @@ namespace InfServer.Script.GameType_Eol
         /// <summary>Vehicle.Death: the swarm's nest.</summary>
         public bool OnSwarmNestDeath(Vehicle dead, InfServer.Game.Player killer)
         {
-            if (dead == null || dead != _swarmNest)
+            SwarmRun run = null;
+            foreach (SwarmRun r in SwarmRuns()) if (dead != null && r.Nest == dead) run = r;
+            if (run == null)
                 return false;
+            _sw = run;
             EndSwarm(Environment.TickCount, ResolveSwarmKillers(dead, killer));
             return true;
         }
@@ -328,16 +444,16 @@ namespace InfServer.Script.GameType_Eol
                     p.Cash += cash;
                     p.Experience += exp;
                     p.syncState();
-                    p.sendMessage(0, string.Format("&Alien Queen - Your team killed the Alien Queen! Cash={0} Experience={1} Points={2}",
-                        cash, exp, points));
+                    p.sendMessage(0, string.Format("&{3} - Your team killed the {3}! Cash={0} Experience={1} Points={2}",
+                        cash, exp, points, _sw.Title));
                 }
                 foreach (Team t in _arena.Teams)
                     if (t != winners)
-                        t.sendArenaMessage("&Alien Queen - The Alien swarm has been defeated by " + winners._name + "!");
-                Log.write(TLog.Normal, "[Eol] Alien Queen killed by {0} ({1} players paid).", winners._name, winners.ActivePlayerCount);
+                        t.sendArenaMessage("&" + _sw.Title + " - The " + _sw.Title + "'s swarm has been defeated by " + winners._name + "!");
+                Log.write(TLog.Normal, "[Eol] {0} killed by {1} ({2} players paid).", _sw.Title, winners._name, winners.ActivePlayerCount);
             }
             else
-                _arena.sendArenaMessage("&The Alien swarm has burrowed away.", _config.flag.periodicBong);
+                _arena.sendArenaMessage("&The " + _sw.Title + "'s swarm has burrowed away.", _config.flag.periodicBong);
 
             // the swarm goes with its nest
             List<Vehicle> gone = new List<Vehicle>();
@@ -356,7 +472,7 @@ namespace InfServer.Script.GameType_Eol
             _swarmLoiterAt.Clear();
             _swarmLoiterNext.Clear();
             _swarmNextTick = NonZeroTick(now + SwarmReturnMs);
-            Log.write(TLog.Normal, "[Eol] Alien swarm over ({0}); back in 5 min.", winners != null ? winners._name : "no winner");
+            Log.write(TLog.Normal, "[Eol] {0} swarm over ({1}); back in 5 min.", _sw.Title, winners != null ? winners._name : "no winner");
         }
 
         /// <summary>One bug in the cave, untouchable, on its way to the cave portal.</summary>
@@ -389,7 +505,7 @@ namespace InfServer.Script.GameType_Eol
         Helpers.ObjectState PickSwarmCaveSpot()
         {
             if (_caveSpots == null)
-                _caveSpots = BuildStraightSpots(1617 * 16 + 8, 1715 * 16 + 8, 394 * 16 + 8, 437 * 16 + 8,
+                _caveSpots = BuildStraightSpots(CaveTX(1617) * 16 + 8, CaveTX(1715) * 16 + 8, CaveTY(394) * 16 + 8, CaveTY(437) * 16 + 8,
                     TileRaw(SwarmCavePortalTileX), TileRaw(SwarmCavePortalTileY), 150, 1600, null);
             return FacingPortal(PickSpreadSpot(_caveSpots, _swarmDeploying.Keys)
                 ?? findOpenWarpBot(_arena, TileRaw(SwarmCaveTileX), TileRaw(SwarmCaveTileY), SwarmCaveSpawnRadius, 24),
@@ -411,7 +527,7 @@ namespace InfServer.Script.GameType_Eol
         public bool PollSwarmDeploying(Bots.Bot b, int now)
         {
             int t0;
-            if (b == null || !_swarmDeploying.TryGetValue(b, out t0))
+            if (b == null || !UseSwarmOf(b._team) || !_swarmDeploying.TryGetValue(b, out t0))
                 return false;
             if (b.IsDead || b.bCondemned || _swarmNest == null || _swarmNest.IsDead)
             {
@@ -441,10 +557,10 @@ namespace InfServer.Script.GameType_Eol
 
         // ---------- guard posts (2026-11-16e, owner: "aliens stuck in a choke point between green physics, stacked") ----------
 
-        List<Helpers.ObjectState> _swarmPosts;
-        Vehicle _swarmPostsFor;
-        readonly Dictionary<Bots.Bot, int> _swarmPostOf = new Dictionary<Bots.Bot, int>();
-        readonly Dictionary<Bots.Bot, int> _swarmPostUntil = new Dictionary<Bots.Bot, int>();
+        List<Helpers.ObjectState> _swarmPosts { get { return _sw.Posts; } set { _sw.Posts = value; } }
+        Vehicle _swarmPostsFor { get { return _sw.PostsFor; } set { _sw.PostsFor = value; } }
+        Dictionary<Bots.Bot, int> _swarmPostOf { get { return _sw.PostOf; } }
+        Dictionary<Bots.Bot, int> _swarmPostUntil { get { return _sw.PostUntil; } }
 
         /// <summary>
         /// Posts round the Queen: 16 directions x 4 rings (150 / 280 / 420 / 560 px), each on open ground with a
@@ -474,7 +590,7 @@ namespace InfServer.Script.GameType_Eol
                     if (open && WideLineClear(nx, ny, x, y) && InPlayArea(x, y, 0))
                         _swarmPosts.Add(new Helpers.ObjectState { positionX = x, positionY = y });
                 }
-            Log.write(TLog.Normal, "[Eol] Alien Queen guard posts: {0}", _swarmPosts.Count);
+            Log.write(TLog.Normal, "[Eol] {0} guard posts: {1}", _sw.Title, _swarmPosts.Count);
             return _swarmPosts;
         }
 
@@ -486,7 +602,7 @@ namespace InfServer.Script.GameType_Eol
         /// </summary>
         public bool SwarmGuard(Bots.Bot b, int now)
         {
-            if (b == null || !IsSwarmTeam(b._team))
+            if (b == null || !UseSwarmOf(b._team))
                 return false;
             List<Helpers.ObjectState> posts = SwarmPosts();
             if (posts == null || posts.Count == 0)
@@ -562,8 +678,8 @@ namespace InfServer.Script.GameType_Eol
             return _arena._rand.Next(posts.Count);
         }
 
-        readonly Dictionary<Bots.Bot, Helpers.ObjectState> _swarmLoiterAt = new Dictionary<Bots.Bot, Helpers.ObjectState>();
-        readonly Dictionary<Bots.Bot, int> _swarmLoiterNext = new Dictionary<Bots.Bot, int>();
+        Dictionary<Bots.Bot, Helpers.ObjectState> _swarmLoiterAt { get { return _sw.LoiterAt; } }
+        Dictionary<Bots.Bot, int> _swarmLoiterNext { get { return _sw.LoiterNext; } }
 
         /// <summary>At a post: small moves round it (a new spot 25-70 px out every 1.2-2.7 s), like an animal sniffing round.</summary>
         void SwarmLoiter(Bots.Bot b, Helpers.ObjectState post, int now)
@@ -619,7 +735,7 @@ namespace InfServer.Script.GameType_Eol
         // and longer (was 1500 px / 15 s), and the whole pack near the one hit goes (PollSwarmRally)
         const int SwarmChaseRadius = 2800, SwarmChaseMs = 20000, SwarmHurtWindowMs = 5000;
         const int SwarmRallyRadius = 1000;   // bugs this close to a hurt bug / the Queen go after the shooter too
-        int _tickSwarmRally;
+        int _tickSwarmRally { get { return _sw.TickRally; } set { _sw.TickRally = value; } }
 
         /// <summary>
         /// A bug or the Queen was just shot by a player / enemy bot: every bug within SwarmRallyRadius of it is let off the
@@ -651,14 +767,14 @@ namespace InfServer.Script.GameType_Eol
                         _swarmChaseUntil[b] = now + SwarmChaseMs;
             }
         }
-        readonly Dictionary<Bots.Bot, int> _swarmChaseUntil = new Dictionary<Bots.Bot, int>();
+        Dictionary<Bots.Bot, int> _swarmChaseUntil { get { return _sw.ChaseUntil; } }
         /// <summary>The choke the owner reported (tiles, A6): a bug found in it is moved straight back to a post.</summary>
         static short[][] SwarmChokeTiles { get { return EolMap.SwarmChokeTiles; } }
         const int SwarmChokeRadius = 10 * 16;
 
-        readonly HashSet<Bots.Bot> _swarmReturning = new HashSet<Bots.Bot>();
+        HashSet<Bots.Bot> _swarmReturning { get { return _sw.Returning; } }
         class StuckSample { public short X, Y; public int Since; }
-        readonly Dictionary<Bots.Bot, StuckSample> _swarmStuck = new Dictionary<Bots.Bot, StuckSample>();
+        Dictionary<Bots.Bot, StuckSample> _swarmStuck { get { return _sw.Stuck; } }
 
         /// <summary>
         /// First in a swarm bug's poll after its deploy: true = it is out past the leash (or in the choke), so it was
@@ -666,7 +782,7 @@ namespace InfServer.Script.GameType_Eol
         /// </summary>
         public bool SwarmLeash(Bots.Bot b, int now)
         {
-            if (b == null || !IsSwarmTeam(b._team) || _swarmNest == null || _swarmNest.IsDead || b.IsDead)
+            if (b == null || !UseSwarmOf(b._team) || _swarmNest == null || _swarmNest.IsDead || b.IsDead)
                 return false;
             short bx = b._state.positionX, by = b._state.positionY;
             foreach (short[] c in SwarmChokeTiles)
@@ -774,29 +890,39 @@ namespace InfServer.Script.GameType_Eol
         /// <summary>The nest is not a machine: nobody can use it or take it over.</summary>
         public bool IsSwarmNest(Vehicle v)
         {
-            return v != null && _swarmNest != null && v == _swarmNest;
+            if (v == null) return false;
+            foreach (SwarmRun r in SwarmRuns()) if (r.Nest != null && r.Nest == v) return true;
+            return false;
         }
 
         /// <summary>Player.Control (reprogramming items): never on the swarm's nest.</summary>
         [Scripts.Event("Player.Control")]
         public bool playerControl(InfServer.Game.Player player, ItemInfo.ControlItem item, UInt16 targetVehicle, short posX, short posY)
         {
-            if (_swarmNest != null && _swarmNest._id == targetVehicle)
-            {
-                if (player != null)
-                    player.sendMessage(-1, "You can't take over the Alien Queen - kill her.");
-                return false;
-            }
+            foreach (SwarmRun r in SwarmRuns())
+                if (r.Nest != null && r.Nest._id == targetVehicle)
+                {
+                    if (player != null)
+                        player.sendMessage(-1, "You can't take over the " + r.Title + " - kill it.");
+                    return false;
+                }
             return true;
         }
 
         /// <summary>Mod *swarm: bring the swarm up now (or report where it is).</summary>
         public string TryModStartSwarm()
         {
-            if (_swarmActive)
-                return "The swarm is already up at " + (_swarmNest != null ? Helpers.posToLetterCoord(_swarmNest._state.positionX, _swarmNest._state.positionY) : "?") + ".";
-            _swarmNextTick = NonZeroTick(Environment.TickCount);
-            return null;
+            // (both swarms: whichever is down comes up now)
+            List<string> up = new List<string>();
+            int started = 0;
+            foreach (SwarmRun r in SwarmRuns())
+            {
+                if (r.Active)
+                    up.Add(r.Title + " at " + (r.Nest != null && r.Nest._state != null ? Helpers.posToLetterCoord(r.Nest._state.positionX, r.Nest._state.positionY) : "?"));
+                else
+                { r.NextTick = NonZeroTick(Environment.TickCount); started++; }
+            }
+            return started > 0 ? null : "Already up: " + string.Join(", ", up.ToArray()) + ".";
         }
     }
 }
