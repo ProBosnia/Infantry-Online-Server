@@ -3116,6 +3116,8 @@ namespace InfServer.Script.GameType_Eol
         /// <summary>Compact open-sector label for HUD, e.g. <c>Open: A+C</c>.</summary>
         string FormatEolOpenSectorsTickerPrefix()
         {
+            if (EolMap.AllSectorsOpen)
+                return null;   // (2026-11-19, owner: "it should not say at the top open sector a b c because there is no sectors")
             if (_eol == null || _eol._activeSectors == null || _eol._activeSectors.Count == 0)
                 return "Open Sector(s): --";
 

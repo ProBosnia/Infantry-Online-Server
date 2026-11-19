@@ -71,6 +71,8 @@ namespace InfServer.Script.GameType_Eol
         /// <summary>The territory at a map point; None = no territory defined there (outside NW).</summary>
         public static BotTerritory TerritoryAt(int x, int y)
         {
+            if (EolMap.Classic)
+                return BotTerritory.None;   // (2026-11-19) Eol Classic: the territories were drawn for Pioneer's NW - none here, bots roam the whole map
             if (!InNw(x, y))
                 return BotTerritory.None;
             foreach (TRect r in NwElite) if (r.Has(x, y)) return BotTerritory.Elite;

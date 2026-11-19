@@ -408,8 +408,8 @@ namespace InfServer.Script.GameType_Eol
 
         bool PlayerRequiresDropshipRecall(Player player)
         {
-            if (player == null || player.IsSpectator)
-                return false;
+            if (player == null || player.IsSpectator || EolMap.AllSectorsOpen)
+                return false;   // (Eol Classic: no toxic zones - nobody is ever sent back)
             return PlayerPositionRequiresDropshipRecall(player._state.positionX, player._state.positionY);
         }
 
@@ -706,7 +706,7 @@ namespace InfServer.Script.GameType_Eol
             if (chosen.Count >= SectorCount)
             {
                 Sectors(fTL, fBL, fTR, fBR);
-                if (announce)
+                if (announce && !EolMap.AllSectorsOpen)   // (Eol Classic: no sectors - nothing to announce)
                 {
                     _arena.sendArenaMessage("All Sectors are currently open with low radiation levels", _config.flag.victoryWarningBong);
                     _arena.setTicker(1, 3, 0, "All Sectors are currently open with low radiation levels");
@@ -970,7 +970,7 @@ namespace InfServer.Script.GameType_Eol
             Sectors(emptyp, emptyp, emptyp, emptyp);
             sectUnder30 = "";
             sectUnder60 = "";
-            _arena.setTicker(1, 3, 0, "No Sectors currently open");
+            _arena.setTicker(1, 3, 0, EolMap.AllSectorsOpen ? "" : "No Sectors currently open");
             bbetweengames = true;
             ClearDropshipRecallState();
             //_arena.flagReset();
@@ -992,7 +992,7 @@ namespace InfServer.Script.GameType_Eol
             Sectors(emptyp, emptyp, emptyp, emptyp);
             sectUnder30 = "";
             sectUnder60 = "";
-            _arena.setTicker(1, 3, 0, "No Sectors currently open");
+            _arena.setTicker(1, 3, 0, EolMap.AllSectorsOpen ? "" : "No Sectors currently open");
             bbetweengames = true;
             ClearDropshipRecallState();
             //_arena.flagReset();
