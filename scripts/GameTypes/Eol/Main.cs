@@ -7236,6 +7236,19 @@ namespace InfServer.Script.GameType_Eol
 
         }
 
+        /// <summary>Open outdoor ground (terrain 0, not a wall) here and 2 tiles round it on every side.</summary>
+        bool LandingSpotClear(short x, short y)
+        {
+            for (int dy = -32; dy <= 32; dy += 32)
+                for (int dx = -32; dx <= 32; dx += 32)
+                {
+                    int ax = x + dx, ay = y + dy;
+                    if (ax < 0 || ay < 0 || _arena.getTile(ax, ay).Blocked || _arena.getTerrainID(ax, ay) != 0)
+                        return false;
+                }
+            return true;
+        }
+
         /// <summary>
         /// Handles a player's portal request. Always returns <c>false</c> so the server does not run
         /// <c>Logic_Lio.Warp</c> (LIO warp group on the portal). Warps use <see cref="findOpenWarp"/> into
@@ -7279,6 +7292,21 @@ namespace InfServer.Script.GameType_Eol
 
             if (_rand == null)
                 _rand = new Random(Environment.TickCount);
+
+            // (2026-11-19) Eol Classic: players land in the owner's squares G5-J6, on open outdoor ground with room round it
+            short lbMinX, lbMaxX, lbMinY, lbMaxY;
+            if (EolMap.PlayerLandingBox(out lbMinX, out lbMaxX, out lbMinY, out lbMaxY))
+            {
+                for (int attempt = 0; attempt < 400; attempt++)
+                {
+                    short px = (short)_arena._rand.Next(lbMinX, lbMaxX + 1), py = (short)_arena._rand.Next(lbMinY, lbMaxY + 1);
+                    if (!LandingSpotClear(px, py))
+                        continue;
+                    warp(player, new Helpers.ObjectState { positionX = px, positionY = py });
+                    return false;
+                }
+                Log.write(TLog.Warning, "[Eol] Portal: no clear landing in G5-J6 ({0}) - landing anywhere open instead.", player._alias);
+            }
 
             // Sample across the full sector AABB each try (dropship exits were clustering near sector center).
             const int portalWarpAttempts = 100;

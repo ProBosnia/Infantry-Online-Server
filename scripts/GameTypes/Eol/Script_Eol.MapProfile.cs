@@ -78,6 +78,14 @@ namespace InfServer.Script.GameType_Eol
         /// them at random each time. Empty on Pioneer (its rotating A3 / A6 / extra sites stay).</summary>
         static readonly short[][] QueenC = { new short[] { 130, 209 } /*B3*/, new short[] { 280, 280 } /*D4*/, new short[] { 352, 288 } /*E4*/, new short[] { 440, 280 } /*F4*/, new short[] { 43, 365 } /*A5*/, new short[] { 200, 680 } /*C9*/, new short[] { 762, 682 } /*J9*/, new short[] { 763, 596 } /*J8*/, new short[] { 840, 120 } /*K2*/, new short[] { 840, 378 } /*K5*/ };
         public static short[][] SwarmQueenSpots { get { return Classic ? QueenC : None; } }
+        /// <summary>(2026-11-19, owner: "have the middle dropship portal spawn G5,G6,H5,H6,I5,I6,J5,J6 for human players only")
+        /// Eol Classic: players who walk into the dropship portal land at random in map squares G5-J6 (tiles x 480-799,
+        /// y 320-479). Bots keep their own landings. False on Pioneer (sector / spawn-zone landing as before).</summary>
+        public static bool PlayerLandingBox(out short minX, out short maxX, out short minY, out short maxY)
+        {
+            minX = 480 * 16; maxX = 800 * 16 - 1; minY = 320 * 16; maxY = 480 * 16 - 1;
+            return Classic;
+        }
         static readonly short[][] None = new short[0][];
         static readonly short[][] SwarmChokeP = { new short[] { 145, 410 } };
         public static short[][] SwarmChokeTiles { get { return Classic ? None : SwarmChokeP; } }
