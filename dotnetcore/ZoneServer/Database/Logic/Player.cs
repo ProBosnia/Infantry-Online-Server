@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -54,7 +54,7 @@ namespace InfServer.Logic
             }
 
 			//Let him in! Set his alias, squad and permissions
-			Helpers.Login_Response(player._client, SC_Login.Login_Result.Success, pkt.loginMessage);
+			Helpers.Login_Response(player._client, SC_Login.Login_Result.Success, Helpers.ZoneLoginPopup(pkt.loginMessage));
             player._permissionStatic = pkt.permission;
             player.modpermission = pkt.modpermission;
             player.zmodpermission = pkt.zmodpermission;

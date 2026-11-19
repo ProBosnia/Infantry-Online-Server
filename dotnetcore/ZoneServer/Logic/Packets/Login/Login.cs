@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
@@ -126,7 +126,7 @@ namespace InfServer.Logic
                 newPlayer.assignFirstTimeStats(false);
                
 				//Success! Let him in.
-                Helpers.Login_Response(client, SC_Login.Login_Result.Success, "This server is currently in stand-alone mode. Your character's scores and stats will not be saved.");
+                Helpers.Login_Response(client, SC_Login.Login_Result.Success, Helpers.ZoneLoginPopup("This server is currently in stand-alone mode. Your character's scores and stats will not be saved."));
             }
 			else
 			{	//Defer the request to the database server

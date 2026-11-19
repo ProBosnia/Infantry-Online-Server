@@ -3146,7 +3146,9 @@ namespace InfServer.Script.GameType_Eol
                 return "Threat: --";
 
             string basePart;
-            if (!EolBaseBotsEnabled)
+            if (true)
+                basePart = null;   // (2026-11-19, owner: "remove that base 30/30 and replace it with the real human count instead" - see RealPlayersTickerPart)
+            else if (!EolBaseBotsEnabled)
                 basePart = "Base: Off";
             else
             {
@@ -3226,12 +3228,21 @@ namespace InfServer.Script.GameType_Eol
             return JoinEolTickerParts(basePart, rotatePart, bhbPart);
         }
 
+        /// <summary>(2026-11-19, owner: "have a counter at the top ... where it shows Real player count, so its easy to determine
+        /// if real people are on or not") every person in the arena, playing or spectating - bots are not players.</summary>
+        string RealPlayersTickerPart()
+        {
+            int n = 0;
+            try { n = _arena.Players.Count(); } catch { }
+            return "Real players: " + n;
+        }
+
         string BuildEolActivityTickerLine()
         {
             string open = FormatEolOpenSectorsTickerPrefix();
             string threat = BuildEolThreatTickerLine();
             string hunt = null;   // (2026-11-17, owner: the 30k hunt is not announced - no HUD line)
-            return JoinEolTickerParts(open, threat, hunt);
+            return JoinEolTickerParts(RealPlayersTickerPart(), open, threat, hunt);
         }
 
         /// <summary>Short bot/wave (+ hunt) summary for ticker row 0 while row 2 is used for crown timers.</summary>

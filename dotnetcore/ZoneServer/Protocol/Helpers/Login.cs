@@ -31,6 +31,25 @@ namespace InfServer.Protocol
 		}
 
 		/// <summary>
+		/// (2026-11-19) The zone's own welcome popup: server.xml &lt;loginPopup value="..."/&gt; ("|" = new line), put in
+		/// front of the login message (the stand-alone notice / the database's message) on a successful login.
+		/// </summary>
+		static public string ZoneLoginPopup(string message)
+		{
+			string zone = null;
+			try
+			{
+				if (_server._config.Exists("server/loginPopup"))
+					zone = _server._config["server/loginPopup"].Value;
+			}
+			catch { zone = null; }
+			if (string.IsNullOrWhiteSpace(zone))
+				return message;
+			zone = zone.Replace("|", "\r\n");
+			return string.IsNullOrEmpty(message) ? zone : zone + "\r\n\r\n" + message;
+		}
+
+		/// <summary>
 		/// Serializes a login response packet
 		/// </summary>
 		static public void Login_Response(Client c, SC_Login.Login_Result result, string popupMessage)
