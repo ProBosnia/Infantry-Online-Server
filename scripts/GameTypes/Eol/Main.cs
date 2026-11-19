@@ -3230,6 +3230,16 @@ namespace InfServer.Script.GameType_Eol
             return JoinEolTickerParts(basePart, rotatePart, bhbPart);
         }
 
+        /// <summary>(2026-11-19, owner: "remove the login notice and have it in the zone instead? in the pink messaging? more
+        /// summarized") the welcome, short, in pink zone chat when a player comes into the arena (Chaos in Eol only).</summary>
+        void SendChaosInEolWelcome(InfServer.Game.Player player)
+        {
+            if (player == null || !EolMap.ChaosInEol)
+                return;
+            player.sendMessage(0, "&Welcome to Chaos in Eol! Join a bot squad with ?team - you can command them.");
+            player.sendMessage(-1, "&Objectives: hold flags for rewards, win KOTH as the last crown standing, or push your bounty to 30k for the max bonus per frag.");
+        }
+
         /// <summary>(2026-11-19, owner: "have a counter at the top ... where it shows Real player count, so its easy to determine
         /// if real people are on or not") every person in the arena, playing or spectating - bots are not players.</summary>
         string RealPlayersTickerPart()
@@ -7886,6 +7896,7 @@ namespace InfServer.Script.GameType_Eol
         public void playerEnterArena(InfServer.Game.Player player)
         {
             EnsureKillStreak(player);
+            SendChaosInEolWelcome(player);
 
             //Send them the crowns..
             if (!_playerCrownStatus.ContainsKey(player))

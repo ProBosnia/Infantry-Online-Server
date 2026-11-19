@@ -7,7 +7,7 @@ bots and the Eol game type), built on the ModalInc `Mode` branch of the Free Inf
 - An Alien Queen swarm and a red Alien King swarm (Pirate Flamer), always on opposite sides of the map; their bugs come
   out of a cave under the dropship.
 - Three bot bases on the map's Major Resource Points, roaming bot squads you can join (`?team`) and command.
-- A bot-free landing area for players (map squares G5-J6) and a welcome popup on login.
+- A bot-free landing area for players (map squares G5-J6) and a short welcome in pink zone chat when you enter.
 
 ## Running the zone
 
@@ -22,8 +22,6 @@ bots and the Eol game type), built on the ModalInc `Mode` branch of the Free Inf
 <zoneName value="Chaos in Eol" />
 <!-- the briefing shown in the zone list -->
 <zoneDescription value="Chaos in Eol - Eol Classic revamped with Bases, Aliens, CTF, King of the Hill, Vehicles and more!" />
-<!-- welcome popup on login, "|" = new line (server engine change in this repo) -->
-<loginPopup value="Welcome to Chaos in Eol!|You can join a bot team with ?team, and you can command them.||Objectives: Capture flags and hold them for rewards and experience. Win King of the Hill (KOTH) by being the last one standing with a crown, or increase your bounty to 30k for the maximum bonus reward on each frag." />
 ```
 
 ---
