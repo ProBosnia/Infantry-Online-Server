@@ -732,7 +732,7 @@ namespace InfServer.Script.GameType_Eol
             if (_arena._bIsPublic)
                 _arena._bPersistent = true;
             _config = _arena._server._zoneConfig;
-            EolMap.Init(_config.level.lvlFile);   // (2026-11-19) Pioneer Station or Eol Classic: every map spot comes from EolMap
+            EolMap.Init(_config.level.lvlFile);   // (2026-11-19) Pioneer Station or Chaos in Eol: every map spot comes from EolMap
             _arena.setTicker(0, 2, 0, "");
             if (_arena.BotActionModule != null)
                 _arena.BotActionModule.SetObjectives(new EolObjectives(_arena, this));
@@ -1482,7 +1482,7 @@ namespace InfServer.Script.GameType_Eol
         bool SectorRotationOnlyPinned()
         {
             if (EolMap.AllSectorsOpen)
-                return true;   // (Eol Classic: no toxic zones - nothing to change, no warning, nobody recalled)
+                return true;   // (Chaos in Eol: no toxic zones - nothing to change, no warning, nobody recalled)
             string pin = EolBoundaries.PinnedFirstSector;
             if (pin == null || _eol == null || _eol._activeSectors == null)
                 return false;
@@ -7331,7 +7331,7 @@ namespace InfServer.Script.GameType_Eol
             if (_rand == null)
                 _rand = new Random(Environment.TickCount);
 
-            // (2026-11-19) Eol Classic: players land in the owner's squares G5-J6, on open outdoor ground with room round it
+            // (2026-11-19) Chaos in Eol: players land in the owner's squares G5-J6, on open outdoor ground with room round it
             short lbMinX, lbMaxX, lbMinY, lbMaxY;
             if (EolMap.PlayerLandingBox(out lbMinX, out lbMaxX, out lbMinY, out lbMaxY))
             {

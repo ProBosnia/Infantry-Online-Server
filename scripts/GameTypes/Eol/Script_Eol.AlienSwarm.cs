@@ -43,10 +43,10 @@ namespace InfServer.Script.GameType_Eol
         // weapon the queen has, he has an alien flame thrower [the Pirate Flamer, owner's pick]. and they should always spawn
         // on opposite sides of the map. make the king a different color too ... red") two swarms, the same code: all the
         // swarm's state lives in a SwarmRun; _sw is the one being worked on (every entry point picks it first). ----------
-        /// <summary>The Alien King (veh 837 in EolClassic.veh): the Queen's body in red, the Pirate Flamer instead of BioBurst.</summary>
+        /// <summary>The Alien King (veh 837 in ChaosInEol.veh): the Queen's body in red, the Pirate Flamer instead of BioBurst.</summary>
         const ushort SwarmKingBotVehId = 837;
-        /// <summary>The King only on Eol Classic (Pioneer's .veh has no 837).</summary>
-        static bool AlienKingEnabled { get { return EolMap.Classic; } }
+        /// <summary>The King only on Chaos in Eol (Pioneer's .veh has no 837).</summary>
+        static bool AlienKingEnabled { get { return EolMap.ChaosInEol; } }
         class SwarmRun
         {
             public string Title;            // "Alien Queen" / "Alien King"
@@ -312,7 +312,7 @@ namespace InfServer.Script.GameType_Eol
             }
             // the next site that is open right now (radiation sectors rotate)
             Helpers.ObjectState site = null;
-            // (2026-11-19) Eol Classic: one of the owner's ten map squares, at random (no rotation, every sector is open)
+            // (2026-11-19) Chaos in Eol: one of the owner's ten map squares, at random (no rotation, every sector is open)
             if (EolMap.SwarmQueenSpots.Length > 0)
             {
                 short[] t = PickSwarmSpotOppositeOther(EolMap.SwarmQueenSpots);

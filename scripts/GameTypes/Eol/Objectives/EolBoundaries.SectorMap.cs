@@ -88,9 +88,9 @@ namespace InfServer.Script.GameType_Eol
             byte[] map = new byte[w * h];
             Queue<int> q = new Queue<int>();
 
-            // (2026-11-19) Eol Classic: no barrier walls and no toxic zones - the play map is cut into three bands west to
+            // (2026-11-19) Chaos in Eol: no barrier walls and no toxic zones - the play map is cut into three bands west to
             // east (A, B, C) only so the code that works per sector keeps working; every sector is always open.
-            if (EolMap.Classic)
+            if (EolMap.ChaosInEol)
             {
                 for (int y = 0; y < h; y++)
                     for (int x = 0; x < w; x++)

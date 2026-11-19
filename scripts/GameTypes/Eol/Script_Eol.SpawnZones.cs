@@ -21,9 +21,9 @@ namespace InfServer.Script.GameType_Eol
 
         /// <summary>Sectors whose dropship landing is inside their spawn zone.</summary>
         static readonly string[] DropshipZoneSectorsPioneer = { "Sector A" };
-        static string[] DropshipZoneSectors { get { return EolMap.Classic ? new string[0] : DropshipZoneSectorsPioneer; } }
-        static string[] SpawnZoneA { get { return EolMap.Classic ? SpawnZoneClassic() : SpawnZoneAPioneer; } }
-        /// <summary>(2026-11-19, owner: "have the spawn points for humans as a bot friendly zone.. like before") Eol Classic: the
+        static string[] DropshipZoneSectors { get { return EolMap.ChaosInEol ? new string[0] : DropshipZoneSectorsPioneer; } }
+        static string[] SpawnZoneA { get { return EolMap.ChaosInEol ? SpawnZoneClassic() : SpawnZoneAPioneer; } }
+        /// <summary>(2026-11-19, owner: "have the spawn points for humans as a bot friendly zone.. like before") Chaos in Eol: the
         /// players' landing squares G5-J6 (tiles x 480-799, y 320-479 = cells 120-199 x 80-119) are a new player buffer like
         /// Pioneer's - no bot roams, chases or spawns in it. (The landing itself: Main.cs playerPortal, EolMap.PlayerLandingBox.)</summary>
         static string[] SpawnZoneClassic()
@@ -36,8 +36,8 @@ namespace InfServer.Script.GameType_Eol
                 rows.Add(cy + ":" + cx0 + "-" + cx1);
             return rows.ToArray();
         }
-        static string[] SpawnZoneB { get { return EolMap.Classic ? new string[0] : SpawnZoneBPioneer; } }
-        static string[] SpawnZoneC { get { return EolMap.Classic ? new string[0] : SpawnZoneCPioneer; } }
+        static string[] SpawnZoneB { get { return EolMap.ChaosInEol ? new string[0] : SpawnZoneBPioneer; } }
+        static string[] SpawnZoneC { get { return EolMap.ChaosInEol ? new string[0] : SpawnZoneCPioneer; } }
 
         static readonly string[] SpawnZoneAPioneer =
         {

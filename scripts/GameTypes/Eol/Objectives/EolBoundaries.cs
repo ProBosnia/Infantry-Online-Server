@@ -409,7 +409,7 @@ namespace InfServer.Script.GameType_Eol
         bool PlayerRequiresDropshipRecall(Player player)
         {
             if (player == null || player.IsSpectator || EolMap.AllSectorsOpen)
-                return false;   // (Eol Classic: no toxic zones - nobody is ever sent back)
+                return false;   // (Chaos in Eol: no toxic zones - nobody is ever sent back)
             return PlayerPositionRequiresDropshipRecall(player._state.positionX, player._state.positionY);
         }
 
@@ -569,7 +569,7 @@ namespace InfServer.Script.GameType_Eol
         private static int DesiredSectorCountForPlayers(int playing)
         {
             if (EolMap.AllSectorsOpen)
-                return SectorCount;   // (Eol Classic: the whole map is used, no toxic zones)
+                return SectorCount;   // (Chaos in Eol: the whole map is used, no toxic zones)
             if (playing < 30)
                 return 1;
             if (playing < 46)
@@ -706,7 +706,7 @@ namespace InfServer.Script.GameType_Eol
             if (chosen.Count >= SectorCount)
             {
                 Sectors(fTL, fBL, fTR, fBR);
-                if (announce && !EolMap.AllSectorsOpen)   // (Eol Classic: no sectors - nothing to announce)
+                if (announce && !EolMap.AllSectorsOpen)   // (Chaos in Eol: no sectors - nothing to announce)
                 {
                     _arena.sendArenaMessage("All Sectors are currently open with low radiation levels", _config.flag.victoryWarningBong);
                     _arena.setTicker(1, 3, 0, "All Sectors are currently open with low radiation levels");
