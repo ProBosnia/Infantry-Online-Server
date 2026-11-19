@@ -1,3 +1,31 @@
+# Chaos in Eol
+
+An Infantry Online zone: the **Eol Classic** map with the full **Eol Pioneer Station** setup (classes, items, vehicles,
+bots and the Eol game type), built on the ModalInc `Mode` branch of the Free Infantry server.
+
+- No toxic zones - the whole map is open.
+- An Alien Queen swarm and a red Alien King swarm (Pirate Flamer), always on opposite sides of the map; their bugs come
+  out of a cave under the dropship.
+- Three bot bases on the map's Major Resource Points, roaming bot squads you can join (`?team`) and command.
+- A bot-free landing area for players (map squares G5-J6) and a welcome popup on login.
+
+## Running the zone
+
+- Game type: `GameType_Eol` (this repo's `scripts/GameTypes/Eol`). The scripts recognise the map by `chaosineol` in the
+  level file name; on any other map (Eol Pioneer Station) they behave as before.
+- Zone files: [`zone/`](zone) - `ChaosInEol.cfg`, `.lvl`, `.lio`, `.itm`, `.veh`, `.rpg`, `.nws` - go in the zone's assets folder.
+- `server.xml`:
+
+```xml
+<zoneConfig value="ChaosInEol.cfg" />
+<gameType value="GameType_Eol" />
+<zoneName value="Chaos in Eol" />
+<!-- welcome popup on login, "|" = new line (server engine change in this repo) -->
+<loginPopup value="Welcome to Chaos in Eol!|You can join a bot team with ?team, and you can command them.||Objectives: Capture flags and hold them for rewards and experience. Win King of the Hill (KOTH) by being the last one standing with a crown, or increase your bounty to 30k for the maximum bonus reward on each frag." />
+```
+
+---
+
 # Infantry-Online-Server
 Free Infantry Server Emulator
 
